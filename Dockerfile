@@ -16,6 +16,7 @@ ADD https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch
 RUN tar xzf /tmp/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz
 RUN mv elasticsearch-$ELASTICSEARCH_VERSION elasticsearch/src
 ADD files/elasticsearch.yml /elasticsearch/etc/elasticsearch.yml
+ADD files/supervisord-elasticsearch.conf /etc/supervisor/conf.d/elasticsearch.conf
 
 WORKDIR /elasticsearch/src/bin
 RUN ./plugin --install royrusso/elasticsearch-HQ
@@ -25,3 +26,4 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 EXPOSE 9200
 EXPOSE 9300
 
+CMD /usr/bin/supervisord -n
