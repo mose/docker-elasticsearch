@@ -9,17 +9,17 @@ RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-s
 RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
 RUN apt-get install -y oracle-java7-installer > /dev/null
 
-ENV ELASTICSEARCH_VERSION 0.90.5
+ENV ELASTICSEARCH_VERSION 0.90.11
 RUN mkdir /elasticsearch
-ADD https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz \
-    /tmp/
+RUN curl -o /tmp/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz -s https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz
 RUN tar xzf /tmp/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz
-RUN mv elasticsearch-$ELASTICSEARCH_VERSION elasticsearch/src
+RUN mv elasticsearch-$ELASTICSEARCH_VERSION /elasticsearch/src
 ADD files/elasticsearch.yml /elasticsearch/etc/elasticsearch.yml
 ADD files/supervisord-elasticsearch.conf /etc/supervisor/conf.d/elasticsearch.conf
 
 WORKDIR /elasticsearch/src/bin
 RUN ./plugin --install royrusso/elasticsearch-HQ
+RUN ./plugin -install knapsack -url http://bit.ly/1mlzYoB
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
