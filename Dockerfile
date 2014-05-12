@@ -18,8 +18,26 @@ ADD files/elasticsearch.yml /elasticsearch/etc/elasticsearch.yml
 ADD files/supervisord-elasticsearch.conf /etc/supervisor/conf.d/elasticsearch.conf
 
 WORKDIR /elasticsearch/src/bin
-RUN ./plugin --install royrusso/elasticsearch-HQ
+
+# https://github.com/royrusso/elasticsearch-HQ
+# -> http://localhost:9200/_plugin/HQ/
+RUN ./plugin -install royrusso/elasticsearch-HQ
+
+# https://github.com/jprante/elasticsearch-knapsack
+# this one is for v0.90.11, change it if you change version
 RUN ./plugin -install knapsack -url http://bit.ly/1mlzYoB
+
+# http://mobz.github.io/elasticsearch-head/
+# -> http://localhost:9200/_plugin/head/
+RUN ./plugin -install mobz/elasticsearch-head
+
+# http://bigdesk.org/
+# -> http://localhost:9200/_plugin/ibigdesk/
+RUN ./plugin -install lukas-vlcek/bigdesk
+
+# https://github.com/polyfractal/elasticsearch-inquisitor
+# -> http://localhost:9200/_plugin/inquisitor/
+RUN ./plugin -install polyfractal/elasticsearch-inquisitor
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
