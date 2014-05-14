@@ -9,17 +9,35 @@ RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-s
 RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
 RUN apt-get install -y oracle-java7-installer > /dev/null
 
-ENV ELASTICSEARCH_VERSION 0.90.5
+ENV ELASTICSEARCH_VERSION 0.90.11
 RUN mkdir /elasticsearch
-ADD https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz \
-    /tmp/
+RUN curl -o /tmp/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz -s https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz
 RUN tar xzf /tmp/elasticsearch-$ELASTICSEARCH_VERSION.tar.gz
-RUN mv elasticsearch-$ELASTICSEARCH_VERSION elasticsearch/src
+RUN mv elasticsearch-$ELASTICSEARCH_VERSION /elasticsearch/src
 ADD files/elasticsearch.yml /elasticsearch/etc/elasticsearch.yml
 ADD files/supervisord-elasticsearch.conf /etc/supervisor/conf.d/elasticsearch.conf
 
 WORKDIR /elasticsearch/src/bin
-RUN ./plugin --install royrusso/elasticsearch-HQ
+
+# https://github.com/royrusso/elasticsearch-HQ
+# -> http://localhost:9200/_plugin/HQ/
+RUN ./plugin -install royrusso/elasticsearch-HQ
+
+# https://github.com/jprante/elasticsearch-knapsack
+# this one is for v0.90.11, change it if you change version
+RUN ./plugin -install knapsack -url http://bit.ly/1mlzYoB
+
+# http://mobz.github.io/elasticsearch-head/
+# -> http://localhost:9200/_plugin/head/
+RUN ./plugin -install mobz/elasticsearch-head
+
+# http://bigdesk.org/
+# -> http://localhost:9200/_plugin/ibigdesk/
+RUN ./plugin -install lukas-vlcek/bigdesk
+
+# https://github.com/polyfractal/elasticsearch-inquisitor
+# -> http://localhost:9200/_plugin/inquisitor/
+RUN ./plugin -install polyfractal/elasticsearch-inquisitor
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

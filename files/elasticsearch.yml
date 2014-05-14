@@ -9,3 +9,10 @@ path:
   data: /elasticsearch/data
   conf: /elasticsearch/etc
   work: /elasticsearch/tmp
+cluster:
+  name: dev
+node:
+  name: docker-dev
+index:
+  number_of_shards: 1
+  number_of_replicas: 0
